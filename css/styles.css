@@ -1,0 +1,408 @@
+/* Estilos personalizados para el Sistema de Atención y Turnos */
+
+:root {
+    --primary-color: #0d6efd;
+    --primary-dark: #0a58ca;
+    --success-color: #198754;
+    --success-dark: #146c43;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --fondo-pantalla: #eef3f9;
+    --texto-principal: #1f2d3d;
+    --panel-destacado: #0d6efd;
+    --texto-alerta: #ffffff;
+    --blanco: #ffffff;
+    --gris-suave: #e9edf3;
+    --gris-medio: #6c757d;
+    --sombra: rgba(15, 23, 42, 0.12);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(180deg, #f7f9fc 0%, #eef3f9 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--texto-principal);
+}
+
+main.container {
+    max-width: 1200px;
+}
+
+.titulo-sistema {
+    color: var(--texto-principal) !important;
+    text-transform: uppercase;
+    letter-spacing: 1.3px;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    text-shadow: 0 2px 6px rgba(31, 45, 61, 0.08);
+}
+
+.panel-turno {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 18px 35px rgba(13, 110, 253, 0.22) !important;
+    min-height: 270px;
+}
+
+#turno-actual {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+    color: var(--texto-alerta) !important;
+    text-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+
+#modulo-actual {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+}
+
+.card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+    transition: all 0.25s ease;
+}
+
+.card:hover {
+    box-shadow: 0 14px 26px rgba(15, 23, 42, 0.12);
+}
+
+#lista-espera {
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+#lista-espera::-webkit-scrollbar {
+    width: 8px;
+}
+
+#lista-espera::-webkit-scrollbar-thumb {
+    background: #d5dbe5;
+    border-radius: 10px;
+}
+
+.list-group-item {
+    border: 1px solid #e7ebf1;
+    border-radius: 12px !important;
+    margin-bottom: 10px;
+    padding: 0.9rem 1rem;
+    font-weight: 600;
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f4f8ff;
+    border-color: var(--primary-color);
+    transform: translateX(2px);
+}
+
+#form-turno {
+    background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+    border: 1px solid #e8edf5 !important;
+    border-radius: 16px;
+}
+
+#form-turno .form-label {
+    font-weight: 600;
+    color: var(--texto-principal);
+}
+
+.form-control,
+.form-select {
+    border: 1px solid #d9e0ea;
+    border-radius: 12px;
+    padding: 0.8rem 0.9rem;
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.btn {
+    border-radius: 12px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    border: none;
+    box-shadow: 0 10px 16px rgba(13, 110, 253, 0.2);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success-color) 0%, var(--success-dark) 100%);
+    border: none;
+    box-shadow: 0 10px 16px rgba(25, 135, 84, 0.2);
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, var(--success-dark) 0%, var(--success-color) 100%);
+}
+
+.badge {
+    padding: 0.55rem 0.8rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+.bg-danger {
+    background-color: var(--danger-color) !important;
+}
+
+#contador-espera,
+#contador-atendidos {
+    min-width: 52px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+}
+
+.alert {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+@media (max-width: 768px) {
+    .titulo-sistema {
+        font-size: 1.8rem;
+        letter-spacing: 0.8px;
+    }
+
+    .panel-turno {
+        min-height: 220px;
+    }
+
+    #turno-actual {
+        font-size: 4rem !important;
+    }
+
+    .btn-lg {
+        font-size: 1rem;
+        padding: 0.8rem 1.1rem;
+    }
+
+    main.container {
+        padding: 1rem;
+    }
+}
+
+/* Filtros */
+.filter-section {
+    background: var(--light-color);
+    padding: 20px;
+    border-radius: var(--border-radius);
+}
+
+.filter-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.filter-controls input {
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    font-size: 0.95em;
+}
+
+.filter-controls input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Lista de turnos */
+.turnos-list {
+    display: grid;
+    gap: 15px;
+}
+
+.turno-card {
+    background: white;
+    border: 1px solid #ecf0f1;
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: var(--box-shadow);
+    transition: all 0.3s;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+}
+
+.turno-card:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.turno-info {
+    display: grid;
+    gap: 10px;
+}
+
+.turno-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.turno-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.turno-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.turno-detail {
+    font-size: 0.95em;
+}
+
+.turno-detail strong {
+    color: var(--primary-color);
+    display: block;
+    font-size: 0.85em;
+    margin-bottom: 3px;
+}
+
+.turno-actions {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.turno-actions button {
+    white-space: nowrap;
+}
+
+.empty-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #95a5a6;
+    font-size: 1.1em;
+}
+
+/* Footer */
+footer {
+    background: var(--dark-color);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+}
+
+.modal-content h3 {
+    margin-bottom: 20px;
+    color: var(--dark-color);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.8em;
+    }
+
+    .turno-card {
+        grid-template-columns: 1fr;
+    }
+
+    .turno-actions {
+        flex-direction: row;
+    }
+
+    main {
+        padding: 20px;
+    }
+
+    section h2 {
+        font-size: 1.2em;
+    }
+
+    .turno-form {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-primary {
+        grid-column: auto;
+    }
+}
