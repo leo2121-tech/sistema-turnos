@@ -80,3 +80,4 @@ La interfaz se adapta automáticamente a:
 
 **Versión**: 1.0  
 **Última actualización**: 2026-08-31
+#proyecto finalizado#
