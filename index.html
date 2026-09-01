@@ -9,43 +9,59 @@
     <!-- Tu CSS propio -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="bg-light">
+<body>
 
 <main class="container my-5">
-    <h1 class="text-center mb-5 titulo-sistema">Sistema de Atención y Turnos</h1>
-    
-    <div class="row mt-4">
-        <!-- Panel Público: Lo que ven las personas -->
-        <div class="col-12 col-md-6 mb-4">
-            <div class="card bg-dark text-white text-center p-4 mb-3 shadow panel-turno">
-                <h2>Turno Actual</h2>
+    <header class="page-header mb-4">
+        <div>
+            <p class="eyebrow">Centro de atención</p>
+            <h1 class="titulo-sistema">Sistema de Atención y Turnos</h1>
+        </div>
+    </header>
+
+    <div class="row g-4 align-items-stretch">
+        <!-- Panel Público -->
+        <div class="col-12 col-lg-7">
+            <section class="panel-turno card text-white text-center p-4 p-md-5">
+                <div class="panel-topline">
+                    <span class="status-dot"></span>
+                    <span>Turno en vivo</span>
+                </div>
+                <h2 class="panel-label">Turno Actual</h2>
                 <h1 class="display-1 fw-bold numero-gigante" id="turno-actual">---</h1>
-                <h3 id="modulo-actual">Módulo ---</h3>
-            </div>
-            <div class="card p-3 shadow-sm border-0">
-                <h4 class="text-secondary mb-3">En Espera</h4>
+                <div class="module-pill" id="modulo-actual">Módulo ---</div>
+            </section>
+
+            <section class="card list-panel p-3 p-md-4 mt-4">
+                <div class="section-header mb-3">
+                    <h4>En espera</h4>
+                    <span class="chip-soft">Cola activa</span>
+                </div>
                 <ul id="lista-espera" class="list-group">
                     <!-- JS inyectará los turnos aquí -->
                 </ul>
-            </div>
+            </section>
         </div>
 
-        <!-- Panel del Operador: Lo que usas para administrar -->
-        <div class="col-12 col-md-6 mb-4">
-            <div class="card p-4 shadow-sm h-100 border-0">
-                <h3 class="mb-4">Panel de Control</h3>
+        <!-- Panel del Operador -->
+        <div class="col-12 col-lg-5">
+            <section class="card control-panel p-4 h-100">
+                <div class="section-header mb-4">
+                    <h3>Panel de control</h3>
+                    <span class="chip-soft chip-primary">Operador</span>
+                </div>
                 <div id="contenedor-mensajes"></div>
 
-                <form id="form-turno" class="mb-4 p-3 border rounded bg-white shadow-sm">
-                    <h5 class="mb-3 text-secondary">Registrar Nuevo Turno</h5>
+                <form id="form-turno" class="mb-4 p-3 p-md-4 form-panel">
+                    <h5 class="mb-3 form-title">Registrar nuevo turno</h5>
 
                     <div class="mb-3">
-                        <label for="nombre-cliente" class="form-label">Nombre del Cliente</label>
-                        <input type="text" id="nombre-cliente" class="form-control" placeholder="Ej. Juan Pérez">
+                        <label for="nombre-cliente" class="form-label">Nombre del cliente</label>
+                        <input type="text" id="nombre-cliente" class="form-control" placeholder="">
                     </div>
 
                     <div class="mb-3">
-                        <label for="tipo-atencion" class="form-label">Tipo de Atención</label>
+                        <label for="tipo-atencion" class="form-label">Tipo de atención</label>
                         <select id="tipo-atencion" class="form-select">
                             <option value="General">Atención General</option>
                             <option value="Preferencial">Atención Preferencial</option>
@@ -55,21 +71,21 @@
                     <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm">Obtener Nuevo Turno</button>
                 </form>
 
-                <hr>
+                <button id="btn-llamar" class="btn btn-success btn-lg mb-3 shadow-sm w-100 call-button">Llamar Siguiente Turno</button>
+                <button id="btn-reiniciar" class="btn btn-outline-secondary mb-4 w-100 reset-button">Reiniciar sistema</button>
 
-                <button id="btn-llamar" class="btn btn-success btn-lg mb-4 shadow-sm w-100">Llamar Siguiente Turno</button>
-                
-                <hr>
-                <h5 class="text-muted mb-3">Estadísticas de Gestión</h5>
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fs-5">Personas en espera:</span>
-                    <span id="contador-espera" class="badge bg-secondary fs-5">0</span>
+                <div class="stats-box">
+                    <h5>Estadísticas</h5>
+                    <div class="stat-row">
+                        <span>Personas en espera</span>
+                        <span id="contador-espera" class="badge badge-neutral">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Personas atendidas</span>
+                        <span id="contador-atendidos" class="badge badge-success">0</span>
+                    </div>
                 </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="fs-5">Personas atendidas:</span>
-                    <span id="contador-atendidos" class="badge bg-success fs-5">0</span>
-                </div>
-            </div>
+            </section>
         </div>
     </div>
 </main>
