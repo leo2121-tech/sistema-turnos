@@ -70,12 +70,8 @@ La interfaz se adapta automáticamente a:
 - Se optimizó para dispositivos móviles
 
 ## Notas
-
 - Los turnos son numerados secuencialmente (001, 002, 003, etc.)
 - Los módulos se asignan aleatoriamente entre 1 y 5
 - La información se reinicia si se limpia el caché del navegador
 - No se requiere conexión a internet (aplicación completamente local)
-
----
-
 #terminado#
