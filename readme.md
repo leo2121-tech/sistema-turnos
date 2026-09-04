@@ -31,7 +31,7 @@ sistema-turnos/
 3. **Operador**: Haz clic en "Llamar Siguiente Turno" para atender al cliente
 4. **Público**: Observa el turno actual y espera tu turno en la lista
 
-## 🔧 Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 - **HTML5**: Estructura de la aplicación
 - **CSS3**: Estilos personalizados con Bootstrap 5
@@ -52,7 +52,7 @@ Los datos persisten mientras no se limpie el caché del navegador.
 
 Los sonidos se generan usando Web Audio API del navegador.
 
-## 📱 Características Responsive
+## Características Responsive
 
 La interfaz se adapta automáticamente a:
 - Pantallas grandes (desktops)
