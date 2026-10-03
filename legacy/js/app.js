@@ -8,6 +8,7 @@ const app = {
 };
 
 const btnLlamar = document.getElementById('btn-llamar');
+const btnReiniciar = document.getElementById('btn-reiniciar');
 const turnoActualDisplay = document.getElementById('turno-actual');
 const moduloActualDisplay = document.getElementById('modulo-actual');
 const listaEspera = document.getElementById('lista-espera');
@@ -29,6 +30,18 @@ formTurno?.addEventListener('submit', (event) => {
 });
 
 btnLlamar?.addEventListener('click', llamarSiguienteTurno);
+btnReiniciar?.addEventListener('click', reiniciarSistema);
+
+function reiniciarSistema() {
+    app.turnoActual = null;
+    app.turnosEnEspera = [];
+    app.turnosAtendidos = 0;
+    app.contador = 0;
+
+    guardarDatos();
+    actualizarPantalla();
+    mostrarMensaje('Sistema reiniciado y cola eliminada.', 'info');
+}
 
 function pedirTurno() {
     const nombreCliente = nombreClienteInput ? nombreClienteInput.value.trim() : '';
