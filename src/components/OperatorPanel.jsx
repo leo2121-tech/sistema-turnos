@@ -4,8 +4,10 @@ export function OperatorPanel({ onAdd, onCallNext, onReset }) {
   const [nombreCliente, setNombreCliente] = useState('')
   const [tipo, setTipo] = useState('General')
   const [error, setError] = useState('')
+  const [moduloId, setModuloId] = useState('')
+  const [moduleError, setModuleError] = useState('')
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
     const cleanName = nombreCliente.trim()
     if (!cleanName) {
@@ -13,17 +15,31 @@ export function OperatorPanel({ onAdd, onCallNext, onReset }) {
       return
     }
 
-    onAdd({ nombreCliente: cleanName, tipo })
+    const registered = await onAdd({ nombreCliente: cleanName, tipo })
+    if (!registered) return
+
     setNombreCliente('')
     setTipo('General')
     setError('')
   }
 
-  function handleReset() {
-    if (!onReset()) return
+  async function handleReset() {
+    const reset = await onReset()
+    if (!reset) return
     setNombreCliente('')
     setTipo('General')
     setError('')
+  }
+
+  function handleCallNext() {
+    const parsedModuleId = Number(moduloId)
+    if (!Number.isInteger(parsedModuleId) || parsedModuleId < 1) {
+      setModuleError('Ingresa el ID de un módulo existente.')
+      return
+    }
+
+    setModuleError('')
+    onCallNext(parsedModuleId)
   }
 
   return (
@@ -66,13 +82,30 @@ export function OperatorPanel({ onAdd, onCallNext, onReset }) {
           <option value="Preferencial">Atención preferencial</option>
         </select>
 
+        <label htmlFor="module-id">ID del módulo</label>
+        <input
+          id="module-id"
+          name="moduloId"
+          type="number"
+          min="1"
+          step="1"
+          value={moduloId}
+          aria-invalid={Boolean(moduleError)}
+          aria-describedby={moduleError ? 'module-error' : undefined}
+          onChange={(event) => {
+            setModuloId(event.target.value)
+            if (moduleError) setModuleError('')
+          }}
+        />
+        {moduleError && <span className="field-error" id="module-error" role="alert">{moduleError}</span>}
+
         <button className="button button-primary" type="submit">
           <span aria-hidden="true">+</span> Registrar turno
         </button>
       </form>
 
       <div className="operator-actions">
-        <button className="button button-call" type="button" onClick={onCallNext}>
+        <button className="button button-call" type="button" onClick={handleCallNext}>
           Llamar siguiente <span aria-hidden="true">&#8594;</span>
         </button>
         <button className="button button-reset" type="button" onClick={handleReset}>

@@ -51,6 +51,10 @@ app.get('/api/health', (req, res) => {
     res.json({ estado: 'API del Sistema de Turnos funcionando 🚀' });
 });
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+// Ruta principal de bienvenida
+app.get('/', (req, res) => {
+    res.send('Bienvenido a la API del Sistema de Turnos 🚀. Ve a /api-docs para ver la documentación.');
+});
 app.listen(port, () => {
     console.log(`Servidor backend corriendo en el puerto ${port}`);
 });

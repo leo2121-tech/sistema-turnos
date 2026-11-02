@@ -16,7 +16,7 @@ function formatTime(value) {
 function TicketRow({ ticket, attended }) {
   return (
     <li className="ticket-row">
-      <span className="ticket-number">{formatNumber(ticket.numero)}</span>
+      <span className="ticket-number">{ticket.codigo || formatNumber(ticket.numero)}</span>
       <span className="ticket-details">
         <strong>{ticket.nombreCliente || 'Cliente sin nombre'}</strong>
         <span>{attended ? `Atendido ${formatTime(ticket.atendidoEn)}` : `Registrado ${formatTime(ticket.creadoEn || ticket.timestamp)}`}</span>

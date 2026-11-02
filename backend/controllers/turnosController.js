@@ -98,4 +98,20 @@ const llamarSiguiente = async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 };
-module.exports = { emitirTurno, obtenerPendientes, llamarSiguiente };
+// Reiniciar la fila sin eliminar turnos atendidos ni la auditoría
+const reiniciarSistema = async (req, res) => {
+    try {
+        const result = await pool.query(
+            "DELETE FROM turnos WHERE estado = 'PENDIENTE'"
+        );
+
+        res.json({
+            mensaje: 'Fila reiniciada; los turnos atendidos y la auditoría se conservaron.',
+            eliminados: result.rowCount,
+        });
+    } catch (error) {
+        console.error('Error al reiniciar sistema:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+module.exports = { emitirTurno, obtenerPendientes, llamarSiguiente, reiniciarSistema };

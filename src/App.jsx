@@ -6,7 +6,7 @@ import { OperatorPanel } from './components/OperatorPanel'
 import { QueuePanel } from './components/QueuePanel'
 import { Stats } from './components/Stats'
 
-const STORAGE_KEY = 'appTurnos'
+const TURNOS_API_URL = '/api/turnos'
 
 const EMPTY_STATE = {
   turnoActual: null,
@@ -16,44 +16,47 @@ const EMPTY_STATE = {
   contador: 0,
 }
 
-function loadState() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
-    if (!saved) return EMPTY_STATE
-
-    const turnosEnEspera = Array.isArray(saved.turnosEnEspera)
-      ? saved.turnosEnEspera
-      : []
-    const historial = Array.isArray(saved.historial) ? saved.historial : []
-    const highestNumber = [
-      saved.turnoActual?.numero || 0,
-      ...turnosEnEspera.map((turno) => Number(turno.numero) || 0),
-      ...historial.map((turno) => Number(turno.numero) || 0),
-    ].reduce((highest, number) => Math.max(highest, number), 0)
-
-    return {
-      turnoActual: saved.turnoActual || null,
-      turnosEnEspera,
-      historial,
-      turnosAtendidos: Number(saved.turnosAtendidos) || historial.length,
-      contador: Math.max(Number(saved.contador) || 0, highestNumber),
-    }
-  } catch {
-    return EMPTY_STATE
+function adaptarTurno(turno, datosLocales = {}) {
+  return {
+    ...turno,
+    numero: Number(turno.codigo?.match(/\d+$/)?.[0]) || Number(turno.id) || 0,
+    modulo: turno.modulo_id || datosLocales.modulo || 1,
+    nombreCliente: datosLocales.nombreCliente || `Cliente General`,
+    tipo: datosLocales.tipo || 'General',
+    creadoEn: turno.fecha_creacion,
   }
 }
 
+async function cargarTurnosPendientes() {
+  const respuesta = await fetch(`${TURNOS_API_URL}/pendientes`)
+  if (!respuesta.ok) throw new Error('Error al obtener la fila')
+
+  const turnos = await respuesta.json()
+  if (!Array.isArray(turnos)) throw new Error('La respuesta de turnos no es válida')
+  return turnos.map((turno) => adaptarTurno(turno))
+}
+
 function App() {
-  const [data, setData] = useState(loadState)
+  // Inicializamos el estado vacío, ya no usamos localStorage
+  const [data, setData] = useState(EMPTY_STATE)
   const [notice, setNotice] = useState(null)
 
+  // Carga inicial desde la API de PostgreSQL
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
-    } catch (error) {
-      console.error('No fue posible guardar los turnos:', error)
+    let active = true
+
+    cargarTurnosPendientes()
+      .then((turnos) => {
+        if (active) {
+          setData((current) => ({ ...current, turnosEnEspera: turnos }))
+        }
+      })
+      .catch((error) => console.error('Error conectando con la API:', error))
+
+    return () => {
+      active = false
     }
-  }, [data])
+  }, [])
 
   useEffect(() => {
     if (!notice) return undefined
@@ -61,55 +64,97 @@ function App() {
     return () => window.clearTimeout(timeoutId)
   }, [notice])
 
-  function registerTicket({ nombreCliente, tipo }) {
-    const numero = data.contador + 1
-    const nuevoTurno = {
-      numero,
-      modulo: Math.floor(Math.random() * 5) + 1,
-      tipo,
-      nombreCliente,
-      creadoEn: new Date().toISOString(),
-    }
+  async function registerTicket({ nombreCliente, tipo }) {
+    try {
+      const respuesta = await fetch(TURNOS_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ servicio_id: 1 }),
+      })
+      if (!respuesta.ok) throw new Error('Error al emitir el turno')
 
-    setData((current) => ({
-      ...current,
-      contador: numero,
-      turnosEnEspera: [...current.turnosEnEspera, nuevoTurno],
-    }))
-    setNotice({
-      type: 'success',
-      text: `Turno ${String(numero).padStart(3, '0')} registrado para ${nombreCliente}.`,
-    })
+      const nuevoTurno = await respuesta.json()
+      const ticketCreado = adaptarTurno(nuevoTurno, { nombreCliente, tipo })
+
+      // Actualizamos la fila consultando nuevamente a la base de datos
+      const turnosPendientes = await cargarTurnosPendientes()
+
+      setData((current) => ({
+        ...current,
+        contador: Math.max(current.contador, ticketCreado.numero),
+        turnosEnEspera: turnosPendientes,
+      }))
+
+      setNotice({
+        type: 'success',
+        text: `Turno ${nuevoTurno.codigo} registrado en la base de datos.`,
+      })
+
+      return true
+    } catch (error) {
+      console.error('Error emitiendo el turno:', error)
+      setNotice({ type: 'warning', text: 'No fue posible conectar con el servidor.' })
+      return false
+    }
   }
 
-  function callNextTicket() {
-    if (data.turnosEnEspera.length === 0) {
-      setNotice({ type: 'warning', text: 'No hay turnos en espera.' })
-      return
+  async function callNextTicket(moduloId) {
+    try {
+      const respuesta = await fetch(`${TURNOS_API_URL}/llamar`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ modulo_id: moduloId }),
+      })
+      const turnoLlamado = await respuesta.json()
+
+      if (!respuesta.ok) {
+        throw new Error(turnoLlamado.mensaje || turnoLlamado.error || 'No fue posible llamar el turno.')
+      }
+
+      const turnoActual = {
+        ...adaptarTurno(turnoLlamado, { modulo: moduloId }),
+        atendidoEn: new Date().toISOString(),
+      }
+
+      // Refrescamos la fila desde la API
+      const turnosPendientes = await cargarTurnosPendientes()
+
+      setData((current) => ({
+        ...current,
+        turnoActual,
+        turnosEnEspera: turnosPendientes,
+        historial: [turnoActual, ...current.historial],
+        turnosAtendidos: current.turnosAtendidos + 1,
+      }))
+
+      setNotice({
+        type: 'info',
+        text: `Turno ${turnoLlamado.codigo} llamado al módulo ${moduloId}.`,
+      })
+    } catch (error) {
+      console.error('Error llamando al turno:', error)
+      setNotice({ type: 'warning', text: error.message || 'No fue posible llamar el turno.' })
     }
-
-    const [nextTicket, ...remaining] = data.turnosEnEspera
-    const attendedTicket = { ...nextTicket, atendidoEn: new Date().toISOString() }
-
-    setData((current) => ({
-      ...current,
-      turnoActual: attendedTicket,
-      turnosEnEspera: remaining,
-      historial: [attendedTicket, ...current.historial],
-      turnosAtendidos: current.turnosAtendidos + 1,
-    }))
-    setNotice({
-      type: 'info',
-      text: `Turno ${String(nextTicket.numero).padStart(3, '0')} llamado al módulo ${nextTicket.modulo}.`,
-    })
   }
 
-  function resetSystem() {
-    if (!window.confirm('¿Reiniciar el sistema y borrar la cola y el historial?')) return false
+  async function resetSystem() {
+    if (!window.confirm('¿Vaciar los turnos pendientes? Se conservarán los turnos atendidos y la auditoría.')) return false
 
-    setData(EMPTY_STATE)
-    setNotice({ type: 'info', text: 'Sistema reiniciado.' })
-    return true
+    try {
+      const respuesta = await fetch(`${TURNOS_API_URL}/reiniciar`, {
+        method: 'DELETE'
+      })
+
+      if (!respuesta.ok) throw new Error('Error al reiniciar la base de datos')
+
+      setData((current) => ({ ...current, turnosEnEspera: [] }))
+      setNotice({ type: 'info', text: 'Fila vaciada. Historial y auditoría conservados.' })
+      return true
+    } catch (error) {
+      console.error('Error al reiniciar:', error)
+      setNotice({ type: 'warning', text: 'No se pudo conectar con el servidor para reiniciar.' })
+      return false
+    }
   }
 
   return (
@@ -124,7 +169,7 @@ function App() {
         </a>
         <div className="header-status">
           <span className="live-indicator" aria-hidden="true" />
-          <span>Sistema operativo</span>
+          <span>Servidor API Conectado</span>
         </div>
       </header>
 
@@ -163,7 +208,7 @@ function App() {
 
       <footer className="app-footer">
         <span>Sistema de Atención</span>
-        <span>Datos guardados en este dispositivo</span>
+        <span>Sincronizado con PostgreSQL y MongoDB</span>
       </footer>
     </main>
   )

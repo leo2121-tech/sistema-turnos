@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { emitirTurno, obtenerPendientes, llamarSiguiente } = require('../controllers/turnosController');
+const {
+	emitirTurno,
+	obtenerPendientes,
+	llamarSiguiente,
+	reiniciarSistema,
+} = require('../controllers/turnosController');
 /**
  * @swagger
  * /api/turnos/pendientes:
@@ -43,6 +48,13 @@ const { emitirTurno, obtenerPendientes, llamarSiguiente } = require('../controll
  *     responses:
  *       200:
  *         description: Turno llamado exitosamente
+ *
+ * /api/turnos/reiniciar:
+ *   delete:
+ *     summary: Elimina turnos pendientes y conserva atendidos y auditoría
+ *     responses:
+ *       200:
+ *         description: Fila reiniciada
  */
 // Crear un turno nuevo
 router.post('/', emitirTurno);
@@ -52,5 +64,8 @@ router.get('/pendientes', obtenerPendientes);
 
 // Llamar al siguiente turno
 router.put('/llamar', llamarSiguiente);
+
+// Eliminar los turnos pendientes
+router.delete('/reiniciar', reiniciarSistema);
 
 module.exports = router;

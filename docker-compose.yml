@@ -1,26 +1,51 @@
-version: '3.8'
-
 services:
-  # Base de datos transaccional (Obligatorio Hito 3)
-  postgres:
-    image: postgres:15
-    container_name: turnos_postgres
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: adminpassword
-      POSTGRES_DB: sistema_turnos
+      API_PROXY_TARGET: http://backend:3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      PG_USER: ${PG_USER:-admin}
+      PG_PASSWORD: ${PG_PASSWORD:-adminpassword}
+      PG_HOST: db_postgres
+      PG_DB: ${PG_DB:-sistema_turnos}
+      PG_PORT: 5432
+      MONGO_URI: mongodb://db_mongo:27017/turnos_db
+    depends_on:
+      - db_postgres
+      - db_mongo
+
+  db_postgres:
+    image: postgres:15-alpine
     ports:
       - "5432:5432"
+    environment:
+      POSTGRES_USER: ${PG_USER:-admin}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-adminpassword}
+      POSTGRES_DB: ${PG_DB:-sistema_turnos}
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # Base de datos documental para trazabilidad (Obligatorio Hito 3)
-  mongodb:
+  db_mongo:
     image: mongo:6
-    container_name: turnos_mongo
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: adminpassword
     ports:
       - "27017:27017"
     volumes:
