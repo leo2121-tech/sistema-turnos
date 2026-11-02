@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # Base de datos transaccional (Obligatorio Hito 3)
+  postgres:
+    image: postgres:15
+    container_name: turnos_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: sistema_turnos
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Base de datos documental para trazabilidad (Obligatorio Hito 3)
+  mongodb:
+    image: mongo:6
+    container_name: turnos_mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: adminpassword
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  postgres_data:
+  mongo_data:
