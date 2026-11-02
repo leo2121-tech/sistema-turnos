@@ -6,7 +6,7 @@ services:
     ports:
       - "5173:5173"
     environment:
-      API_PROXY_TARGET: http://backend:3000
+      - VITE_API_URL=http://backend:3000
     volumes:
       - .:/app
       - /app/node_modules
@@ -23,12 +23,12 @@ services:
       - ./backend:/app
       - /app/node_modules
     environment:
-      PG_USER: ${PG_USER:-admin}
-      PG_PASSWORD: ${PG_PASSWORD:-adminpassword}
-      PG_HOST: db_postgres
-      PG_DB: ${PG_DB:-sistema_turnos}
-      PG_PORT: 5432
-      MONGO_URI: mongodb://db_mongo:27017/turnos_db
+      - PG_USER=${PG_USER:-postgres}
+      - PG_PASSWORD=${PG_PASSWORD:-admin123}
+      - PG_HOST=db_postgres
+      - PG_DB=${PG_DB:-sistema_turnos}
+      - PG_PORT=5432
+      - MONGO_URI=mongodb://db_mongo:27017/turnos_db
     depends_on:
       - db_postgres
       - db_mongo
@@ -38,9 +38,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: ${PG_USER:-admin}
-      POSTGRES_PASSWORD: ${PG_PASSWORD:-adminpassword}
-      POSTGRES_DB: ${PG_DB:-sistema_turnos}
+      - POSTGRES_USER=${PG_USER:-postgres}
+      - POSTGRES_PASSWORD=${PG_PASSWORD:-admin123}
+      - POSTGRES_DB=${PG_DB:-sistema_turnos}
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
